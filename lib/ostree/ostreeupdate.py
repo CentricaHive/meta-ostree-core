@@ -135,7 +135,7 @@ class OSTreeUpdate(string.Formatter):
         """
         Copy kernel, initramfs, and U-Boot config for OSTree.
         """
-        imagename = 'zImage' if (self.MACHINE) in ('nanohub') else 'fitImage'
+        imagename = 'zImage' if (self.MACHINE) in ('nanohub','nano2','sense') else 'fitImage'
         bootdir = os.path.join(self.IMAGE_ROOTFS, 'boot')
         kernels = glob.glob(os.path.join(bootdir, imagename+'-*'))
         if len(kernels) != 1:
@@ -160,7 +160,7 @@ class OSTreeUpdate(string.Formatter):
         """
         Copy FIT image
         """
-        imagename = 'zImage' if (self.MACHINE) in ('nanohub') else 'fitImage'
+        imagename = 'zImage' if (self.MACHINE) in ('nanohub','nano2','sense') else 'fitImage'
         if self.INITRAMFS_IMAGE:
             fitimage = os.path.realpath(os.path.join(self.DEPLOY_DIR_IMAGE,
                                                      self.format('fitImage-{0}-{1}.bin', self.INITRAMFS_IMAGE, self.MACHINE)))
