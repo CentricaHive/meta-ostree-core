@@ -1,6 +1,6 @@
 Upstream-Status: Inappropriate [oe specific]
 diff --git a/src/switchroot/ostree-prepare-root-static.c b/src/switchroot/ostree-prepare-root-static.c
-index 3995a6f..cd299cc 100644
+index 7e5c965b..1f7a1331 100644
 --- a/src/switchroot/ostree-prepare-root-static.c
 +++ b/src/switchroot/ostree-prepare-root-static.c
 @@ -66,7 +66,7 @@
@@ -12,11 +12,11 @@ index 3995a6f..cd299cc 100644
  
  #include "ostree-mount-util.h"
  
-@@ -212,17 +212,14 @@ main (int argc, char *argv[])
+@@ -216,17 +216,14 @@ main (int argc, char *argv[])
    if (mount (NULL, "/", NULL, MS_REC | MS_PRIVATE | MS_SILENT, NULL) < 0)
      err (EXIT_FAILURE, "failed to make \"/\" private mount");
  
--  if (mkdir (TMP_SYSROOT, 0755) < 0)
+-  if (mkdir (TMP_SYSROOT, 0755) < 0 && errno != EEXIST)
 -    err (EXIT_FAILURE, "couldn't create temporary sysroot %s", TMP_SYSROOT);
 +  /* Make deploy_path a bind mount, so we can move it later */
 +  if (mount (deploy_path, deploy_path, NULL, MS_BIND | MS_SILENT, NULL) < 0)
@@ -33,7 +33,7 @@ index 3995a6f..cd299cc 100644
    /* This will result in a system with /sysroot read-only. Thus, two additional
     * writable bind-mounts (for /etc and /var) are required later on. */
    if (sysroot_readonly)
-@@ -314,7 +311,7 @@ main (int argc, char *argv[])
+@@ -329,7 +326,7 @@ main (int argc, char *argv[])
    /* When running under systemd, /var will be handled by a 'var.mount' unit outside
     * of initramfs.
     * Systemd auto-detection can be overridden by a marker file under /run. */
@@ -42,7 +42,7 @@ index 3995a6f..cd299cc 100644
  
    /* If required, bind-mount `/var` in the deployment to the "stateroot", which is
     *  the shared persistent directory for a set of deployments.  More info:
-@@ -326,9 +323,6 @@ main (int argc, char *argv[])
+@@ -341,9 +338,6 @@ main (int argc, char *argv[])
          err (EXIT_FAILURE, "failed to bind mount ../../var to var");
      }
  
